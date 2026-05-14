@@ -8,6 +8,18 @@ from app.utils.slug import slugify
 from app.config import settings
 
 
+async def _unique_slug(db: AsyncSession, base: str) -> str:
+    """Append a counter to the slug if it already exists."""
+    slug = base
+    counter = 1
+    while True:
+        result = await db.execute(select(News).where(News.slug == slug))
+        if result.scalar_one_or_none() is None:
+            return slug
+        slug = f"{base}-{counter}"
+        counter += 1
+
+
 async def create_news(db: AsyncSession, data: NewsCreate) -> News:
     ai_content = None
     if data.use_ai:
@@ -15,7 +27,7 @@ async def create_news(db: AsyncSession, data: NewsCreate) -> News:
             f"{data.title}: {data.content}", "notícia"
         )
 
-    slug = slugify(data.title)
+    slug = await _unique_slug(db, slugify(data.title))
     news = News(
         title=data.title,
         slug=slug,
@@ -27,7 +39,7 @@ async def create_news(db: AsyncSession, data: NewsCreate) -> News:
     await db.commit()
     await db.refresh(news)
 
-    site_url = f"{settings.SITE_BASE_URL}/news/{news.slug}"
+    site_url = f"{settings.SITE_BASE_URL}/news.html"
     announcement = ai_content or data.content
 
     embed = discord_client.build_news_embed(news.title, announcement, news.author, site_url)

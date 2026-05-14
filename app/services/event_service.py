@@ -8,13 +8,24 @@ from app.utils.slug import slugify
 from app.config import settings
 
 
+async def _unique_slug(db: AsyncSession, base: str) -> str:
+    slug = base
+    counter = 1
+    while True:
+        result = await db.execute(select(Event).where(Event.slug == slug))
+        if result.scalar_one_or_none() is None:
+            return slug
+        slug = f"{base}-{counter}"
+        counter += 1
+
+
 async def create_event(db: AsyncSession, data: EventCreate) -> Event:
     ai_description = None
     if data.use_ai:
         raw = f"Evento: {data.name} no dia {data.event_date.strftime('%d/%m/%Y às %H:%M')}. {data.description}"
         ai_description = await ai_client.enhance_announcement(raw, "evento")
 
-    slug = slugify(data.name)
+    slug = await _unique_slug(db, slugify(data.name))
     event = Event(
         name=data.name,
         slug=slug,
@@ -27,7 +38,7 @@ async def create_event(db: AsyncSession, data: EventCreate) -> Event:
     await db.commit()
     await db.refresh(event)
 
-    site_url = f"{settings.SITE_BASE_URL}/events/{event.slug}"
+    site_url = f"{settings.SITE_BASE_URL}/news.html"
     announcement = ai_description or data.description
     event_date_str = data.event_date.strftime("%d/%m/%Y às %H:%M")
 

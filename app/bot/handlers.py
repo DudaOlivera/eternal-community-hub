@@ -17,7 +17,7 @@ async def handle_news(interaction: discord.Interaction, titulo: str, conteudo: s
         return
 
     await interaction.response.defer(ephemeral=True)
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=30.0) as client:
         resp = await client.post(f"{API_BASE}/api/news", json={
             "title": titulo,
             "content": conteudo,
@@ -28,7 +28,7 @@ async def handle_news(interaction: discord.Interaction, titulo: str, conteudo: s
     if resp.status_code == 201:
         data = resp.json()
         await interaction.followup.send(
-            f"✅ Notícia publicada!\n🔗 {settings.SITE_BASE_URL}/news/{data['slug']}",
+            f"✅ Notícia publicada!\n🔗 {settings.SITE_BASE_URL}/news.html",
             ephemeral=True,
         )
     else:
@@ -47,7 +47,7 @@ async def handle_event(interaction: discord.Interaction, nome: str, data: str, d
         await interaction.followup.send("❌ Formato de data inválido. Use DD/MM/YYYY HH:MM", ephemeral=True)
         return
 
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=30.0) as client:
         resp = await client.post(f"{API_BASE}/api/events", json={
             "name": nome,
             "description": descricao,
@@ -59,7 +59,7 @@ async def handle_event(interaction: discord.Interaction, nome: str, data: str, d
     if resp.status_code == 201:
         event_data = resp.json()
         await interaction.followup.send(
-            f"✅ Evento criado!\n🔗 {settings.SITE_BASE_URL}/events/{event_data['slug']}",
+            f"✅ Evento criado!\n🔗 {settings.SITE_BASE_URL}/news.html",
             ephemeral=True,
         )
     else:
@@ -72,7 +72,7 @@ async def handle_maintenance(interaction: discord.Interaction, motivo: str, dura
         return
 
     await interaction.response.defer(ephemeral=True)
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=30.0) as client:
         resp = await client.post(f"{API_BASE}/api/maintenance", json={
             "reason": motivo,
             "estimated_duration": duracao,
@@ -87,7 +87,7 @@ async def handle_maintenance(interaction: discord.Interaction, motivo: str, dura
 
 async def handle_ranking(interaction: discord.Interaction):
     await interaction.response.defer()
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=15.0) as client:
         resp = await client.get(f"{API_BASE}/api/ranking")
 
     if resp.status_code != 200:
@@ -99,7 +99,7 @@ async def handle_ranking(interaction: discord.Interaction):
         await interaction.followup.send("Nenhum dado de ranking disponível.")
         return
 
-    lines = [f"**🏆 Ranking PvP** — [Ver no site]({settings.SITE_BASE_URL}/ranking)\n"]
+    lines = [f"**🏆 Ranking PvP** — [Ver no site]({settings.SITE_BASE_URL}/news.html)\n"]
     for i, p in enumerate(data[:10], 1):
         lines.append(f"`{i}.` **{p['player_name']}** ({p['char_class']}) — {p['pvp_kills']} kills")
 
@@ -108,7 +108,7 @@ async def handle_ranking(interaction: discord.Interaction):
 
 async def handle_boss(interaction: discord.Interaction):
     await interaction.response.defer()
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=15.0) as client:
         resp = await client.get(f"{API_BASE}/api/server/bosses")
 
     data = resp.json()
@@ -116,7 +116,7 @@ async def handle_boss(interaction: discord.Interaction):
         await interaction.followup.send("Nenhum boss agendado no momento.")
         return
 
-    lines = [f"**💀 Próximos Boss Spawns** — [Ver no site]({settings.SITE_BASE_URL}/bosses)\n"]
+    lines = [f"**💀 Próximos Boss Spawns** — [Ver no site]({settings.SITE_BASE_URL}/news.html)\n"]
     for b in data:
         lines.append(f"**{b['boss_name']}** — {b['location']} — `{b['spawn_time']}`")
 
@@ -125,7 +125,7 @@ async def handle_boss(interaction: discord.Interaction):
 
 async def handle_players(interaction: discord.Interaction):
     await interaction.response.defer()
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=15.0) as client:
         resp = await client.get(f"{API_BASE}/api/server/status")
 
     data = resp.json()

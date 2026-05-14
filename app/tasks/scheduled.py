@@ -54,7 +54,7 @@ async def _send_event_reminders():
         events = result.scalars().all()
 
         for event in events:
-            site_url = f"{settings.SITE_BASE_URL}/events/{event.slug}"
+            site_url = f"{settings.SITE_BASE_URL}/news.html"
             embed = {
                 "title": f"⏰ Lembrete: {event.name}",
                 "description": f"O evento começa em menos de 1 hora!\n\n🔗 {site_url}",
