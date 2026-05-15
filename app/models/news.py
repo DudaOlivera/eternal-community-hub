@@ -16,5 +16,6 @@ class News(Base):
     author: Mapped[str] = mapped_column(String(100))
     published: Mapped[bool] = mapped_column(Boolean, default=True)
     sent_discord: Mapped[bool] = mapped_column(Boolean, default=False)
+    image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())

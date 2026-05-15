@@ -17,5 +17,6 @@ class Event(Base):
     event_date: Mapped[datetime] = mapped_column(DateTime)
     reminder_sent: Mapped[bool] = mapped_column(Boolean, default=False)
     sent_discord: Mapped[bool] = mapped_column(Boolean, default=False)
+    image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())

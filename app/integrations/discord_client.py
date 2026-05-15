@@ -25,8 +25,8 @@ async def send_message(channel_id: int, content: str = "", embed: dict | None = 
 
 # --- Embed builders ---
 
-def build_news_embed(title: str, content: str, author: str, site_url: str) -> dict:
-    return {
+def build_news_embed(title: str, content: str, author: str, site_url: str, image_url: str = None) -> dict:
+    embed = {
         "title": f"📰 {title}",
         "description": content[:300] + ("..." if len(content) > 300 else ""),
         "url": site_url,
@@ -34,10 +34,13 @@ def build_news_embed(title: str, content: str, author: str, site_url: str) -> di
         "fields": [{"name": "🔗 Leia mais", "value": site_url, "inline": False}],
         "footer": {"text": f"Publicado por {author} • Lineage 2 Community Hub"},
     }
+    if image_url:
+        embed["image"] = {"url": image_url}
+    return embed
 
 
-def build_event_embed(name: str, description: str, event_date: str, author: str, site_url: str) -> dict:
-    return {
+def build_event_embed(name: str, description: str, event_date: str, author: str, site_url: str, image_url: str = None) -> dict:
+    embed = {
         "title": f"⚔️ {name}",
         "description": description[:300] + ("..." if len(description) > 300 else ""),
         "url": site_url,
@@ -48,6 +51,9 @@ def build_event_embed(name: str, description: str, event_date: str, author: str,
         ],
         "footer": {"text": f"Criado por {author} • Lineage 2 Community Hub"},
     }
+    if image_url:
+        embed["image"] = {"url": image_url}
+    return embed
 
 
 def build_maintenance_embed(reason: str, duration: str, author: str) -> dict:

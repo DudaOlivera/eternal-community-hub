@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+import httpx
 
 from app.models.news import News
 from app.schemas.news import NewsCreate
@@ -34,6 +35,7 @@ async def create_news(db: AsyncSession, data: NewsCreate) -> News:
         content=data.content,
         ai_content=ai_content,
         author=data.author,
+        image_url=data.image_url,
     )
     db.add(news)
     await db.commit()
@@ -42,7 +44,7 @@ async def create_news(db: AsyncSession, data: NewsCreate) -> News:
     site_url = f"{settings.SITE_BASE_URL}/news.html"
     announcement = ai_content or data.content
 
-    embed = discord_client.build_news_embed(news.title, announcement, news.author, site_url)
+    embed = discord_client.build_news_embed(news.title, announcement, news.author, site_url, data.image_url)
     news.sent_discord = await discord_client.send_message(
         settings.DISCORD_NEWS_CHANNEL_ID, embed=embed
     )

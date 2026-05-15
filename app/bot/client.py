@@ -32,15 +32,15 @@ async def on_ready():
 
 
 @tree.command(name="news", description="Publicar uma notícia", guild=GUILD)
-@app_commands.describe(titulo="Título da notícia", conteudo="Conteúdo da notícia")
-async def cmd_news(interaction: discord.Interaction, titulo: str, conteudo: str):
-    await handlers.handle_news(interaction, titulo, conteudo)
+@app_commands.describe(titulo="Título da notícia", conteudo="Conteúdo da notícia", imagem="Anexe uma imagem (opcional)")
+async def cmd_news(interaction: discord.Interaction, titulo: str, conteudo: str, imagem: discord.Attachment = None):
+    await handlers.handle_news(interaction, titulo, conteudo, imagem)
 
 
 @tree.command(name="evento", description="Criar um evento", guild=GUILD)
-@app_commands.describe(nome="Nome do evento", data="Data (DD/MM/YYYY HH:MM)", descricao="Descrição")
-async def cmd_evento(interaction: discord.Interaction, nome: str, data: str, descricao: str):
-    await handlers.handle_event(interaction, nome, data, descricao)
+@app_commands.describe(nome="Nome do evento", data="Data (DD/MM/YYYY HH:MM)", descricao="Descrição", imagem="Anexe uma imagem (opcional)")
+async def cmd_evento(interaction: discord.Interaction, nome: str, data: str, descricao: str, imagem: discord.Attachment = None):
+    await handlers.handle_event(interaction, nome, data, descricao, imagem)
 
 
 @tree.command(name="manutencao", description="Anunciar manutenção", guild=GUILD)
@@ -63,6 +63,26 @@ async def cmd_boss(interaction: discord.Interaction):
 async def cmd_players(interaction: discord.Interaction):
     await handlers.handle_players(interaction)
 
+
+@tree.command(name="limpar", description="Apagar últimas mensagens do canal", guild=GUILD)
+@app_commands.describe(quantidade="Quantas mensagens apagar (máx 100)")
+async def cmd_limpar(interaction: discord.Interaction, quantidade: int = 10):
+    await handlers.handle_limpar(interaction, quantidade)
+
+
+@tree.command(name="apagar_news", description="Apagar todas as notícias do banco", guild=GUILD)
+async def cmd_apagar_news(interaction: discord.Interaction):
+    await handlers.handle_delete(interaction, "news")
+
+
+@tree.command(name="apagar_eventos", description="Apagar todos os eventos do banco", guild=GUILD)
+async def cmd_apagar_eventos(interaction: discord.Interaction):
+    await handlers.handle_delete(interaction, "events")
+
+
+@tree.command(name="apagar_tudo", description="⚠️ Apagar TUDO do banco de dados", guild=GUILD)
+async def cmd_apagar_tudo(interaction: discord.Interaction):
+    await handlers.handle_delete(interaction, "all")
 
 if __name__ == "__main__":
     bot.run(settings.DISCORD_BOT_TOKEN)

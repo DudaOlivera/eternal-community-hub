@@ -12,6 +12,7 @@ services:
       - redis
     volumes:
       - .:/app
+      - uploads_data:/app/uploads
 
   bot:
     build: .
@@ -56,3 +57,4 @@ services:
 
 volumes:
   postgres_data:
+  uploads_data:

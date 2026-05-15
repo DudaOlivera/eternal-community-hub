@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import news, events, maintenance, support, server, webhooks
+from app.api import news, events, maintenance, support, server, webhooks, ranking, upload, admin
 
 app = FastAPI(
     title="Lineage 2 Community Hub",
@@ -27,6 +27,9 @@ app.include_router(events.router)
 app.include_router(maintenance.router)
 app.include_router(support.router)
 app.include_router(server.router)
+app.include_router(ranking.router)
+app.include_router(upload.router)
+app.include_router(admin.router)
 app.include_router(webhooks.router)
 
 

@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+import httpx
 
 from app.models.event import Event
 from app.schemas.event import EventCreate
@@ -33,6 +34,7 @@ async def create_event(db: AsyncSession, data: EventCreate) -> Event:
         ai_description=ai_description,
         author=data.author,
         event_date=data.event_date,
+        image_url=data.image_url,
     )
     db.add(event)
     await db.commit()
@@ -42,7 +44,19 @@ async def create_event(db: AsyncSession, data: EventCreate) -> Event:
     announcement = ai_description or data.description
     event_date_str = data.event_date.strftime("%d/%m/%Y às %H:%M")
 
-    embed = discord_client.build_event_embed(data.name, announcement, event_date_str, data.author, site_url)
+    image_bytes = None
+    image_filename = None
+    if data.image_url:
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as http:
+                r = await http.get(data.image_url)
+                if r.status_code == 200:
+                    image_bytes = r.content
+                    image_filename = data.image_url.split("/")[-1].split("?")[0] or "image.jpg"
+        except Exception:
+            pass
+
+    embed = discord_client.build_event_embed(data.name, announcement, event_date_str, data.author, site_url, data.image_url)
     event.sent_discord = await discord_client.send_message(
         settings.DISCORD_EVENTS_CHANNEL_ID, embed=embed
     )

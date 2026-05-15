@@ -7,6 +7,7 @@ class NewsCreate(BaseModel):
     content: str
     author: str
     use_ai: bool = True
+    image_url: str | None = None
 
 
 class NewsResponse(BaseModel):
@@ -18,6 +19,7 @@ class NewsResponse(BaseModel):
     author: str
     published: bool
     sent_discord: bool
+    image_url: str | None
     created_at: datetime
 
     model_config = {"from_attributes": True}

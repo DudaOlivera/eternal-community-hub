@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     # Site base URL (used to build post links sent to Discord)
     SITE_BASE_URL: str = "https://site.com"
 
+    # Public URL of this API (used for image URLs in embeds and site)
+    # When running locally, use ngrok or similar to expose port 8000
+    API_PUBLIC_URL: str = "http://localhost:8000"
+
     # Discord
     DISCORD_BOT_TOKEN: str
     DISCORD_GUILD_ID: int

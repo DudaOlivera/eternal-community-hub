@@ -8,6 +8,7 @@ class EventCreate(BaseModel):
     author: str
     event_date: datetime
     use_ai: bool = True
+    image_url: str | None = None
 
 
 class EventResponse(BaseModel):
@@ -20,6 +21,7 @@ class EventResponse(BaseModel):
     event_date: datetime
     active: bool
     sent_discord: bool
+    image_url: str | None
     created_at: datetime
 
     model_config = {"from_attributes": True}
